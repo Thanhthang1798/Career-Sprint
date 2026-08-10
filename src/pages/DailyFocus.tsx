@@ -4,12 +4,7 @@ import type { Skill, Task } from "../types";
 import { CheckCircle2, Circle, Clock, ChevronRight, Zap } from "lucide-react";
 import { Card, CardContent } from "../components/Card";
 import TaskDetailModal from "../components/TaskDetailModal"; // We will build this next
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
-
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+import { cn } from "../utils/cn";
 
 const skillIcons: Record<Skill, string> = {
   "English": "🇬🇧",
@@ -18,7 +13,7 @@ const skillIcons: Record<Skill, string> = {
 };
 
 export default function DailyFocus() {
-  const { state, saveDailyReview } = useAppContext();
+  const { state, saveDailyReview, addToast } = useAppContext();
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
   // For MVP, find the active day (first day not fully completed, or day 1)
@@ -51,6 +46,10 @@ export default function DailyFocus() {
     e.preventDefault();
     saveDailyReview(today.date, { ...review, date: today.date });
     setReviewSaved(true);
+    addToast({
+      title: "Daily Review Saved",
+      subtitle: "Great job reflecting on your progress today!",
+    });
     setTimeout(() => setReviewSaved(false), 3000);
   };
 

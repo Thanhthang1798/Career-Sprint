@@ -5,7 +5,7 @@ export interface ToastMessage {
   id: string;
   title: string;
   subtitle: string;
-  xpValue: number;
+  xpValue?: number;
 }
 
 interface ToastProps {
@@ -26,8 +26,11 @@ export const Toast = ({ toast, onClose }: ToastProps) => {
         <Zap className="w-6 h-6 fill-amber-500 text-amber-500" />
       </div>
       <div className="flex-1">
-        <p className="text-lg font-black text-slate-900 leading-tight">+{toast.xpValue} XP</p>
-        <p className="text-sm font-semibold text-slate-500">{toast.title}</p>
+        {toast.xpValue !== undefined && (
+          <p className="text-lg font-black text-slate-900 leading-tight">+{toast.xpValue} XP</p>
+        )}
+        <p className={cn("font-semibold text-slate-500", toast.xpValue !== undefined ? "text-sm" : "text-base")}>{toast.title}</p>
+        {!toast.xpValue && <p className="text-sm text-slate-400">{toast.subtitle}</p>}
       </div>
     </div>
   );

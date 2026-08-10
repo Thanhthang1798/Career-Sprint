@@ -8,11 +8,13 @@ import type { ToastMessage } from "../components/Toast";
 interface AppContextType {
   state: UserState;
   markTaskDone: (taskId: string, evidence?: string, notes?: string) => void;
+  unmarkTaskDone: (taskId: string) => void;
   updateTask: (taskId: string, updates: Partial<Task>) => void;
   saveDailyReview: (date: string, review: DailyReview) => void;
   toggleCheckpoint: (checkpointId: string) => void;
   resetProgress: () => void;
   toasts: ToastMessage[];
+  addToast: (toast: Omit<ToastMessage, "id">) => void;
   removeToast: (id: string) => void;
 }
 
@@ -105,6 +107,53 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         levelUnlocked,
       };
     });
+  }, [setState, addToast]);
+
+  const unmarkTaskDone = useCallback((taskId: string) => {
+    setState((prev) => {
+      let taskXp = 0;
+      let dayId = "";
+
+      const newDays = prev.days.map((day) => {
+        const newTasks = day.tasks.map((task) => {
+          if (task.id === taskId && task.status === "completed") {
+            taskXp = task.xp;
+            dayId = day.id;
+            return { ...task, status: "available" as const, evidence: undefined, notes: undefined };
+          }
+          return task;
+        });
+        return { ...day, tasks: newTasks };
+      });
+
+      if (taskXp === 0) return prev; // Task not found or not completed
+
+      let newXp = prev.xp - taskXp;
+
+      // Check if daily completion bonus was applied (if they just unmarked it, they no longer have it)
+      // Wait, to be precise, if they previously had all tasks completed and we are unmarking one, we remove the bonus.
+      const day = prev.days.find(d => d.id === dayId);
+      if (day && day.tasks.every(t => t.status === "completed")) {
+        newXp -= 50; // Remove daily completion bonus
+      }
+
+      // Also if level 2 was unlocked, we should technically re-lock it if they undo a task that was required.
+      // But level locking logic in games usually doesn't revert, however, for correctness:
+      let levelUnlocked = prev.levelUnlocked;
+      const allTasksDone = newDays.every(d => d.tasks.every(t => t.status === "completed"));
+      const allCheckpointsDone = prev.checkpoints.every(c => c.completed);
+
+      if (!(allTasksDone && allCheckpointsDone) && levelUnlocked >= 2) {
+        levelUnlocked = 1; // Basic assumption for MVP
+      }
+
+      return {
+        ...prev,
+        days: newDays,
+        xp: Math.max(0, newXp),
+        levelUnlocked,
+      };
+    });
   }, [setState]);
 
   const saveDailyReview = useCallback((date: string, review: DailyReview) => {
@@ -158,7 +207,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   }, [setState]);
 
   return (
-    <AppContext.Provider value={{ state, markTaskDone, updateTask, saveDailyReview, toggleCheckpoint, resetProgress, toasts, removeToast }}>
+    <AppContext.Provider value={{ state, markTaskDone, unmarkTaskDone, updateTask, saveDailyReview, toggleCheckpoint, resetProgress, toasts, addToast, removeToast }}>
       {children}
     </AppContext.Provider>
   );
