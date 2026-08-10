@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { getLevelInfo } from "../context/AppContext";
 import { useAppContext } from "../context/AppContext";
 import { Card, CardContent } from "../components/Card";
 import { ProgressBar } from "../components/ProgressBar";
@@ -8,6 +9,14 @@ import { Trophy, Flame, CheckCircle2, Clock } from "lucide-react";
 
 export default function Dashboard() {
   const { state } = useAppContext();
+  const levelInfo = getLevelInfo(state.xp, state.levelUnlocked);
+
+
+  const currentLevelXp = state.xp - levelInfo.minXp;
+  const nextLevelXpRequired = levelInfo.maxXp ? levelInfo.maxXp - levelInfo.minXp : 0;
+
+  // also calculate progress percentage for XP bar
+  const levelXpPercentage = nextLevelXpRequired > 0 ? Math.round((currentLevelXp / nextLevelXpRequired) * 100) : 100;
 
   const stats = useMemo(() => {
     let totalTasks = 0;
@@ -41,11 +50,11 @@ export default function Dashboard() {
     return { totalTasks, completedTasks, overallProgress, completedHours, skillStats };
   }, [state.days]);
 
-  const levels = ["FOUNDATION", "BUILDER", "SENIOR MODE", "INTERVIEW READY"];
-  const currentLevelName = levels[state.currentLevel - 1] || "MAX LEVEL";
+
+
   
   // Hardcoded target XP for MVP
-  const targetXp = 1000;
+
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -66,13 +75,23 @@ export default function Dashboard() {
                 </span>
                 <span className="text-slate-400 font-medium text-sm">09 Aug → 15 Aug</span>
               </div>
-              <h2 className="text-4xl md:text-5xl font-black tracking-tight">{currentLevelName}</h2>
-              <p className="text-indigo-200/80 mt-2 text-lg font-medium">Level {String(state.currentLevel).padStart(2, '0')}</p>
+              <h2 className="text-4xl md:text-5xl font-black tracking-tight">{levelInfo.name}</h2>
+              <p className="text-indigo-200/80 mt-2 text-lg font-medium">Level {String(levelInfo.level).padStart(2, '0')}</p>
             </div>
             
             <div className="text-left md:text-right flex flex-col items-start md:items-end bg-black/20 p-5 rounded-2xl border border-white/5 backdrop-blur-sm">
               <p className="text-indigo-300 font-bold tracking-wider text-xs mb-1 uppercase">Total XP</p>
-              <p className="text-4xl font-black text-white">{state.xp} <span className="text-indigo-400/60 text-xl font-bold">/ {targetXp}</span></p>
+
+              <p className="text-4xl font-black text-white">{currentLevelXp}
+                {levelInfo.maxXp && <span className="text-indigo-400/60 text-xl font-bold">/ {nextLevelXpRequired} XP</span>}
+              </p>
+              <div className="w-full mt-2 mb-1 h-1.5 bg-black/40 rounded-full overflow-hidden">
+                 <div className="h-full bg-amber-400" style={{ width: `${levelXpPercentage}%` }}></div>
+              </div>
+              <div className="text-xs text-indigo-300 font-normal mt-1 w-full text-right">
+                {levelInfo.maxXp ? `${levelInfo.maxXp - state.xp} XP needed to unlock Level ${levelInfo.level + 1}` : 'Max Level reached!'}
+              </div>
+
             </div>
           </div>
           

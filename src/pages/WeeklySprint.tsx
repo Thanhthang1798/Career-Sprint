@@ -30,7 +30,7 @@ const DayCard = ({ day, isToday, isFuture }: { day: Day; isToday: boolean; isFut
           <div>
             <div className="flex items-center gap-2 mb-1">
               <h4 className={cn("font-black tracking-tight text-xl", isToday ? "text-indigo-900" : "text-slate-800")}>
-                {day.label}
+                {day.label} <span className="text-sm text-slate-400 font-bold ml-1">/ 7</span>
               </h4>
               {isToday && <span className="bg-indigo-100 text-indigo-700 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-widest">Today</span>}
             </div>
@@ -108,11 +108,18 @@ export default function WeeklySprint() {
             
             <div className="flex-1 space-y-6">
               <div>
-                <h3 className="text-xl font-black text-slate-900 flex items-center gap-2">
-                  Week 1 Checkpoint
-                  {isLevelUnlocked && <span className="bg-indigo-100 text-indigo-700 text-xs px-2 py-1 rounded-md uppercase font-bold tracking-wider">Completed</span>}
-                </h3>
-                <p className="text-slate-500 text-sm mt-1">Complete all gates to unlock the next level.</p>
+                <div className="flex flex-col mb-2">
+                  <h3 className="text-xl font-black text-slate-900 flex items-center gap-2">
+                    Week 1 Checkpoint
+                    {isLevelUnlocked && <span className="bg-indigo-100 text-indigo-700 text-xs px-2 py-1 rounded-md uppercase font-bold tracking-wider">Completed</span>}
+                  </h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-sm font-bold text-indigo-600">
+                      {state.checkpoints.filter(cp => cp.completed).length} / {state.checkpoints.length} completed
+                    </span>
+                  </div>
+                  <p className="text-slate-500 text-sm mt-1">Complete all tasks and checkpoints to unlock the next level.</p>
+                </div>
               </div>
 
               <div className="space-y-3">

@@ -70,17 +70,22 @@ export default function DailyFocus() {
           <h1 className="text-3xl font-black text-slate-900 tracking-tight">Daily Focus</h1>
         </div>
         <div className="text-left md:text-right">
-          <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">Daily Progress</p>
-          <div className="flex items-center gap-2">
-            <div className="h-2 w-32 bg-slate-200 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-indigo-600 transition-all duration-500" 
-                style={{ width: `${Math.round((today.tasks.filter(t => t.status === "completed").length / today.tasks.length) * 100)}%` }}
-              />
-            </div>
+          <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-1">Today's Progress</p>
+          <div className="flex flex-col items-end gap-1">
             <span className="text-sm font-bold text-indigo-700">
-              {today.tasks.filter(t => t.status === "completed").length} / {today.tasks.length}
+              {today.tasks.filter(t => t.status === "completed").length} / {today.tasks.length} tasks
             </span>
+            <div className="flex items-center gap-2">
+              <div className="h-2 w-32 bg-slate-200 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-indigo-600 transition-all duration-500"
+                  style={{ width: `${today.tasks.length > 0 ? Math.round((today.tasks.filter(t => t.status === "completed").length / today.tasks.length) * 100) : 0}%` }}
+                />
+              </div>
+              <span className="text-xs font-bold text-slate-500">
+                {today.tasks.length > 0 ? Math.round((today.tasks.filter(t => t.status === "completed").length / today.tasks.length) * 100) : 0}%
+              </span>
+            </div>
           </div>
         </div>
       </div>
