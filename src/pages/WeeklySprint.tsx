@@ -5,12 +5,7 @@ import { ProgressBar } from "../components/ProgressBar";
 import type { Day } from "../types";
 import { CheckCircle2, Circle, Lock, Unlock, ArrowRight } from "lucide-react";
 
-// We'll just define cn here for now if we haven't created the util file
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
-function utilsCn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+import { cn } from "../utils/cn";
 
 const DayCard = ({ day, isToday, isFuture }: { day: Day; isToday: boolean; isFuture: boolean }) => {
   const totalTasks = day.tasks.length;
@@ -20,7 +15,7 @@ const DayCard = ({ day, isToday, isFuture }: { day: Day; isToday: boolean; isFut
 
   return (
     <Card 
-      className={utilsCn(
+      className={cn(
         "min-w-[280px] snap-center flex-shrink-0 transition-all border-2 relative overflow-hidden",
         isToday ? "border-indigo-500 shadow-[0_0_20px_-5px_rgba(99,102,241,0.4)] transform scale-[1.02] bg-white z-10" : "border-slate-200/80",
         isAllDone && !isToday && "border-emerald-400/60 bg-emerald-50/20",
@@ -34,7 +29,7 @@ const DayCard = ({ day, isToday, isFuture }: { day: Day; isToday: boolean; isFut
         <div className="flex justify-between items-start mb-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <h4 className={utilsCn("font-black tracking-tight text-xl", isToday ? "text-indigo-900" : "text-slate-800")}>
+              <h4 className={cn("font-black tracking-tight text-xl", isToday ? "text-indigo-900" : "text-slate-800")}>
                 {day.label}
               </h4>
               {isToday && <span className="bg-indigo-100 text-indigo-700 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-widest">Today</span>}
@@ -51,10 +46,10 @@ const DayCard = ({ day, isToday, isFuture }: { day: Day; isToday: boolean; isFut
 
         <div>
           <div className="flex justify-between text-xs font-semibold mb-2">
-            <span className={utilsCn(isAllDone ? "text-emerald-700" : "text-slate-600")}>
+            <span className={cn(isAllDone ? "text-emerald-700" : "text-slate-600")}>
               {completedTasks} / {totalTasks} tasks
             </span>
-            <span className={utilsCn(isAllDone ? "text-emerald-700" : "text-slate-600")}>
+            <span className={cn(isAllDone ? "text-emerald-700" : "text-slate-600")}>
               {progress}%
             </span>
           </div>
@@ -125,7 +120,7 @@ export default function WeeklySprint() {
                   <button
                     key={cp.id}
                     onClick={() => toggleCheckpoint(cp.id)}
-                    className={utilsCn(
+                    className={cn(
                       "w-full text-left flex items-start gap-4 p-4 rounded-lg border transition-all duration-200 group",
                       cp.completed 
                         ? "bg-emerald-50 border-emerald-200" 
@@ -140,10 +135,10 @@ export default function WeeklySprint() {
                       )}
                     </div>
                     <div>
-                      <p className={utilsCn("font-bold text-sm", cp.completed ? "text-emerald-900" : "text-slate-700")}>
+                      <p className={cn("font-bold text-sm", cp.completed ? "text-emerald-900" : "text-slate-700")}>
                         {cp.title}
                       </p>
-                      <p className={utilsCn("text-xs mt-1", cp.completed ? "text-emerald-700/80" : "text-slate-500")}>
+                      <p className={cn("text-xs mt-1", cp.completed ? "text-emerald-700/80" : "text-slate-500")}>
                         {cp.description}
                       </p>
                     </div>
