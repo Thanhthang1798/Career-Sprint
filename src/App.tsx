@@ -60,6 +60,7 @@ const MobileNav = () => {
     { name: "Home", path: "/", icon: LayoutDashboard },
     { name: "Sprint", path: "/sprint", icon: Calendar },
     { name: "Daily", path: "/daily", icon: Target },
+    { name: "Settings", path: "/settings", icon: Settings },
   ];
 
   return (

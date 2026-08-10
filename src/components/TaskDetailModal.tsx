@@ -2,12 +2,7 @@ import { useState, useEffect } from "react";
 import type { Task } from "../types";
 import { useAppContext } from "../context/AppContext";
 import { X, CheckCircle2, Clock, Target as TargetIcon, Zap } from "lucide-react";
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
-
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+import { cn } from "../utils/cn";
 
 interface TaskDetailModalProps {
   task: Task;
@@ -16,7 +11,7 @@ interface TaskDetailModalProps {
 }
 
 export default function TaskDetailModal({ task, isOpen, onClose }: TaskDetailModalProps) {
-  const { markTaskDone, updateTask } = useAppContext();
+  const { markTaskDone, unmarkTaskDone, updateTask } = useAppContext();
   
   const [notes, setNotes] = useState(task.notes || "");
   const [evidence, setEvidence] = useState(task.evidence || "");
@@ -36,6 +31,11 @@ export default function TaskDetailModal({ task, isOpen, onClose }: TaskDetailMod
 
   const handleMarkDone = () => {
     markTaskDone(task.id, evidence, notes);
+    onClose();
+  };
+
+  const handleUnmarkDone = () => {
+    unmarkTaskDone(task.id);
     onClose();
   };
 
@@ -144,12 +144,20 @@ export default function TaskDetailModal({ task, isOpen, onClose }: TaskDetailMod
               </button>
             </>
           ) : (
-             <button 
+            <>
+              <button
+                onClick={handleUnmarkDone}
+                className="px-4 py-2.5 text-sm font-bold text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors"
+              >
+                Unmark as Done
+              </button>
+              <button
                 onClick={onClose}
                 className="px-6 py-2.5 text-sm font-bold text-slate-700 bg-slate-200 hover:bg-slate-300 rounded-lg transition-colors"
               >
                 Close
               </button>
+            </>
           )}
         </div>
       </div>
