@@ -1,4 +1,19 @@
 import React, { createContext, useContext, useCallback, useState, useEffect } from "react";
+
+export const getLevelInfo = (xp: number, levelUnlocked: number) => {
+  // If they have enough XP but haven't unlocked the level, keep them at the unlocked level max bound
+  if (levelUnlocked === 1) return { level: 1, name: "FOUNDATION", minXp: 0, maxXp: 1000 };
+  if (levelUnlocked === 2 && xp < 2500) return { level: 2, name: "BUILDER", minXp: 1000, maxXp: 2500 };
+  if (levelUnlocked === 2 && xp >= 2500) return { level: 2, name: "BUILDER", minXp: 1000, maxXp: 2500 }; // Wait, if level 3 isn't unlocked... For MVP let's assume levelUnlocked tracks max level.
+
+  if (xp >= 4500 && levelUnlocked >= 4) return { level: 4, name: "INTERVIEW READY", minXp: 4500, maxXp: null };
+  if (xp >= 2500 && levelUnlocked >= 3) return { level: 3, name: "SENIOR MODE", minXp: 2500, maxXp: 4500 };
+  if (xp >= 1000 && levelUnlocked >= 2) return { level: 2, name: "BUILDER", minXp: 1000, maxXp: 2500 };
+
+  // Default fallback if they somehow have less XP than their unlock allows, or just fallback to 1
+  return { level: 1, name: "FOUNDATION", minXp: 0, maxXp: 1000 };
+};
+
 import type { ReactNode } from "react";
 import type { UserState, Task, DailyReview } from "../types";
 import { initialUserState } from "../data/initialData";
@@ -185,12 +200,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         levelUnlocked = 2;
       }
 
-      // Add 200 XP when all checkpoints are done (only once, assuming level isn't already unlocked to prevent spam)
       let newXp = prev.xp;
-      if (allCheckpointsDone && !prev.checkpoints.every(c => c.completed)) {
-         newXp += 200;
-      } else if (!allCheckpointsDone && prev.checkpoints.every(c => c.completed)) {
-         newXp -= 200; // Deduct if un-toggling
+      if (isCompleting) {
+        newXp += 200;
+      } else {
+        newXp = Math.max(0, newXp - 200);
       }
 
       return {

@@ -6,6 +6,7 @@ import { AppProvider, useAppContext } from "./context/AppContext";
 import Dashboard from "./pages/Dashboard";
 import WeeklySprint from "./pages/WeeklySprint";
 import DailyFocus from "./pages/DailyFocus";
+import Progress from "./pages/Progress";
 import { ToastContainer } from "./components/Toast";
 
 const GlobalToasts = () => {
@@ -121,7 +122,7 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/sprint" element={<WeeklySprint />} />
             <Route path="/daily" element={<DailyFocus />} />
-            <Route path="/progress" element={<Placeholder title="Progress" />} />
+            <Route path="/progress" element={<Progress />} />
             <Route path="/settings" element={<Placeholder title="Settings" />} />
           </Routes>
         </Layout>

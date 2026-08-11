@@ -52,7 +52,7 @@ export const SkillCard: React.FC<SkillCardProps> = ({ skill, timePerDay, complet
             to="/daily"
             className="mt-4 w-full block text-center py-2 px-4 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm transition-colors"
           >
-            View tasks
+            {completedTasks === totalTasks && totalTasks > 0 ? "Review →" : "Continue →"}
           </Link>
         </div>
       </CardContent>
