@@ -30,7 +30,7 @@ const DayCard = ({ day, isToday, isFuture }: { day: Day; isToday: boolean; isFut
           <div>
             <div className="flex items-center gap-2 mb-1">
               <h4 className={cn("font-black tracking-tight text-xl", isToday ? "text-indigo-900" : "text-slate-800")}>
-                {day.label}
+                {day.label} <span className="text-sm text-slate-400 font-bold ml-1">/ 7</span>
               </h4>
               {isToday && <span className="bg-indigo-100 text-indigo-700 text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-widest">Today</span>}
             </div>

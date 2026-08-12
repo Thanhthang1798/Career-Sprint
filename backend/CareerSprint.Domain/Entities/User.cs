@@ -1,0 +1,14 @@
+using System;
+
+namespace CareerSprint.Domain.Entities
+{
+    public class User
+    {
+        public Guid Id { get; set; }
+        public string Email { get; set; } = string.Empty;
+        public string DisplayName { get; set; } = string.Empty;
+        public string PasswordHash { get; set; } = string.Empty; // Added for Auth later
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+    }
+}

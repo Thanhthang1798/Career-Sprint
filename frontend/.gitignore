@@ -22,12 +22,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-# .NET Core
-[Bb]in/
-[Oo]bj/
-backend/**/bin/
-backend/**/obj/
-backend/.vs/
-backend/**/*.user
-backend/**/*.suo
