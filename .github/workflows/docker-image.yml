@@ -1,0 +1,128 @@
+name: Career Sprint - CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: career-sprint-production
+  cancel-in-progress: false
+
+env:
+  IMAGE_NAME: ghcr.io/thanhthang1798/career-sprint
+
+jobs:
+
+  # =========================
+  # CI
+  # =========================
+  build:
+    name: Build & Validate
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build application
+        run: npm run build
+
+      # =========================
+      # Docker
+      # =========================
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set image tags
+        id: meta
+        run: |
+          echo "sha=${IMAGE_NAME}:${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+          echo "latest=${IMAGE_NAME}:latest" >> "$GITHUB_OUTPUT"
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t ${{ steps.meta.outputs.sha }} \
+            -t ${{ steps.meta.outputs.latest }} \
+            .
+
+      - name: Push Docker image
+        run: |
+          docker push ${{ steps.meta.outputs.sha }}
+          docker push ${{ steps.meta.outputs.latest }}
+
+
+  # =========================
+  # CD
+  # =========================
+  deploy:
+    name: Deploy to VPS
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    environment:
+      name: production
+
+    steps:
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+
+          script: |
+            set -e
+
+            echo "================================="
+            echo "Deploy Career Sprint"
+            echo "================================="
+
+            cd /opt/career-sprint
+
+            echo "Pulling Docker image..."
+
+            docker pull ghcr.io/thanhthang1798/career-sprint:${{ github.sha }}
+
+            echo "Updating container..."
+
+            export IMAGE_TAG=${{ github.sha }}
+
+            docker compose up -d
+
+            echo "Cleaning old images..."
+
+            docker image prune -f
+
+            echo "Checking containers..."
+
+            docker compose ps
+
+            echo "Deployment completed successfully!"
