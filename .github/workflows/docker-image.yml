@@ -90,7 +90,17 @@ jobs:
       name: production
 
     steps:
-
+      - name: Test SSH private key
+        env:
+          SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+        run: |
+          printf '%s\n' "$SSH_KEY" > /tmp/deploy_key
+          chmod 600 /tmp/deploy_key
+      
+          ssh-keygen -y -f /tmp/deploy_key > /tmp/public_key
+      
+          echo "✅ GitHub can parse the private key"
+    
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v1.2.2
         with:
