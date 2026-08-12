@@ -2,7 +2,7 @@ import React, { createContext, useContext, useCallback, useState, useEffect } fr
 
 export const getLevelInfo = (xp: number, levelUnlocked: number) => {
   // If they have enough XP but haven't unlocked the level, keep them at the unlocked level max bound
-  if (levelUnlocked === 1) return { level: 1, name: "FOUNDATION", minXp: 0, maxXp: 1000 };
+  if (levelUnlocked === 1) return { level: 1, name: "FOUNDATION for Thanh Thắng", minXp: 0, maxXp: 1000 };
   if (levelUnlocked === 2 && xp < 2500) return { level: 2, name: "BUILDER", minXp: 1000, maxXp: 2500 };
   if (levelUnlocked === 2 && xp >= 2500) return { level: 2, name: "BUILDER", minXp: 1000, maxXp: 2500 }; // Wait, if level 3 isn't unlocked... For MVP let's assume levelUnlocked tracks max level.
 
