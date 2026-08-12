@@ -1,0 +1,25 @@
+services:
+  career-sprint:
+    image: ghcr.io/Thanhthang1798/career-sprint:latest
+
+    container_name: career-sprint
+
+    restart: unless-stopped
+
+    ports:
+      - "127.0.0.1:8080:80"
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost/health"
+        ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
